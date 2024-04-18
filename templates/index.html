@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questify</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M10.033 4c1.104 0 1.998.895 1.998 2H16v4.5a.5.5 0 0 1-.5.5h-3.5v1h2.5a1.5 1.5 0 0 0 1.5-1.5V6c0-2.21-1.79-4-4-4H4C1.79 2 0 3.79 0 6v6a1.5 1.5 0 0 0 1.5 1.5H4v-1H.5a.5.5 0 0 1-.5-.5V6h3.467c0-1.105.894-2 1.998-2zM4 6H1V4h3v2zm6-1h3v2h-3V5zM4 9v2H1V9h3zm5.5 1h3v2h-3v-2zM4 13v2H1v-2h3zm5.5 1h3v2h-3v-2z'/%3E%3C/svg%3E" type="image/svg+xml">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.0/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" integrity="sha384-b6lVK+yci+bfDmaY1u0zE8YYJt0TZxLEAFyYSLHId4xoVvsrQu3INevFKo+Xir8e" crossorigin="anonymous">
+    <style>
+        .response-container {
+            max-height: 400px;
+            overflow-y: auto; 
+        }
+        :root {
+            --primary-color: #3f51b5; 
+            --secondary-color: #ff5722; 
+            --text-color: #212121; 
+            --background-color: #f5f5f5; 
+        }
+        .title-bar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .icon {
+            font-size: 28px;
+            margin-right: 10px;
+        }
+        .left-panel {
+            background-color: var(--background-color);
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            overflow-y: auto;
+            margin-top: 70px;
+        }
+        .chat-option {
+            margin-bottom: 10px;
+        }
+        .history {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        .right-panel {
+            margin-left: 270px;
+        }
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .kaggle-icon {
+            fill: white;
+            height: 28px;
+            width: 28px;
+            margin-right: 5px;
+        }
+        /* Styling for buttons */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #2c3e50; 
+            border-color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-bar">
+        <div class="title">
+            <i class="bi bi-robot icon"></i><span class="text">Questify</span>
+        </div>
+        <div class="login-buttons" style="display: flex; justify-content: flex-end;">
+            <button class="btn btn-success" id="loginBtn" data-bs-toggle="modal" data-bs-target="#underConstructionModal">Login</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-success" id="signupBtn" data-bs-toggle="modal" data-bs-target="#underConstructionModal">Sign Up</button>
+        </div>
+    </div>
+    <div class="container-fluid p-3">
+        <div class="row">
+            <div class="col-md-4 left-panel">
+                <div class="chat-option">
+                    <button class="btn btn-primary" id="newChatBtn">New Chat</button>
+                </div>
+                <div class="history">
+                    <h6>Today's History:</h6>
+                    <p>No history yet.</p>
+                </div>
+                <!-- Login and Sign Up Buttons -->
+            </div>
+            <div class="col-md-8 right-panel">
+                <div class="mb-3">
+                    <form id="keywordForm" method="post" action="">
+                        <input type="text" class="form-control" id="keywordInput" placeholder="What do you want to ask?">
+                        <button class="btn btn-primary mt-2" type="submit">Submit</button> 
+                    </form>
+                </div>
+                <div class="mb-3">
+                    <form id="promptForm" method="post" action="">
+                        <label for="prompt" class="form-label"><strong>Prompt: </strong></label>
+                        <textarea class="form-control" type="textarea" id="prompt" name="prompt" rows="3" disabled></textarea>
+                        <br>
+                        <button class="btn btn-primary" type="submit">Submit</button> 
+                    </form>
+                    <div class="mb-3">
+                        <h6>Response:</h6>
+                        <div class="container border overflow-auto h-50 response-container" id="response"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="underConstructionModal" tabindex="-1" aria-labelledby="underConstructionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="underConstructionModalLabel">Under Construction&#128119;</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    This feature is currently under construction. We apologize for any inconvenience&#128533;
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer text-center" style="padding: 10px;">
+        <p style="font-size: 14px; color: white;">Created by Sahil Wagh</p>
+        <div class="d-flex justify-content-center">
+            <a href="https://github.com/someuser/questify" target="_blank" style="color: white; text-decoration: none;">
+                <i class="bi bi-github icon"></i>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="https://www.kaggle.com/someuser/questify" target="_blank" style="color: white; text-decoration: none; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="kaggle-icon" style="height: 20px; width: auto; margin-right: 5px;">
+                    <path d="M304.2 501.5L158.4 320.3 298.2 185c2.6-2.7 1.7-10.5-5.3-10.5h-69.2c-3.5 0-7 1.8-10.5 5.3L80.9 313.5V7.5q0-7.5-7.5-7.5H21.5Q14 0 14 7.5v497q0 7.5 7.5 7.5h51.9q7.5 0 7.5-7.5v-109l30.8-29.3 110.5 140.6c3 3.5 6.5 5.3 10.5 5.3h66.9q5.25 0 6-3z"/>
+                </svg>
+            </a>
+        </div> 
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            var keyword; 
+    
+            $('#keywordForm').submit(function(event) {
+                event.preventDefault();
+                keyword = $('#keywordInput').val(); 
+                var dateTime = new Date();
+                var time = dateTime.toLocaleTimeString();
+                $('#response').append('<p>(' + time + ') <i class="bi bi-person"></i>: <span class="green-text">' + keyword + '</span></p>')
+             .find('p:last-child')
+             .css({"font-weight": "bold", "color": "green","float": "left", "width": "90%"}); 
+            $('#response').append('<p>(' + time + ') <i class="bi bi-robot"></i>: ' + "Preparing for Questify " + keyword + '</p>')
+             .find('p:last-child')
+             .css({"font-style": "italic", "color": "blue","float": "right", "width": "90%"});
+             setTimeout(function() {
+            $('#response').append('<p>(' + time + ') <i class="bi bi-robot"></i>: Ready! Ask Any Question on ' + keyword + '</p>')
+                         .find('p:last-child')
+                         .css({"font-style": "italic", "color": "blue","float": "right", "width": "90%"});
+        }, 2000); 
+        
+        setTimeout(function() {
+            $('#response').append('<p>(' + time + ') <i class="bi bi-robot"></i>: ' + data.response + '</p>');
+        }, 2000); 
+         
+                $('#prompt').removeAttr('disabled').focus();
+                $('#prompt').val('');
+            });
+    
+            
+            $('#promptForm').submit(function(event) {
+    event.preventDefault();
+    var keyword = $('#keywordInput').val(); 
+    var prompt = $('#prompt').val();
+    var dateTime = new Date();
+    var time = dateTime.toLocaleTimeString();
+    
+    $('#response').append('<p>(' + time + ') <i class="bi bi-person"></i>: <span class="green-text">'+ prompt + '</span></p>').find('p:last-child').css({"font-weight": "bold", "color": "green","float": "left", "width": "90%"});
+    $('#response').append('<p>(' + time + ') <i class="bi bi-robot"></i>: Looking for best Answer!' + '</p>')
+                         .find('p:last-child')
+                         .css({"font-style": "italic", "color": "blue","float": "right", "width": "90%"});           
+  
+    $.ajax({
+        url: '/', 
+        type: 'POST',
+        data: {keywordInput: keyword, prompt: prompt}, 
+        dataType: 'json',
+        success: function(data) {
+            $('#response').append('<p>(' + time + ') <i class="bi bi-robot"></i>: '+ data.response + '</p>')
+                         .find('p:last-child')
+                         .css({"font-style": "italic", "color": "blue","float": "right", "width": "90%"}); 
+        }
+    });
+            });
+        });
+        document.getElementById("newChatBtn").addEventListener("click", function(event) {
+        // Prevent the default behavior of the button
+            location.reload();
+        // Optionally, you can add your logic here
+        console.log("New Chat button clicked");
+        // You can also open a modal or perform any other action here
+    });
+
+
+    </script>
+    
+</body>
+</html>
